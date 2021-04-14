@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     plt.plot([i for i in range(0, len(aligned_ctr))], aligned_ctr)
     plt.xlabel("time step(s)")
-    plt.ylabel("ctr")
+    plt.ylabel("CTR")
     plt.show()
 
 

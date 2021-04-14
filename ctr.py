@@ -4,7 +4,7 @@ from policy import linucb_policy
 
 
 def ctr_simulator(K_arms, d, alpha, data_path):
-    # Initiate policy
+    # Инициализируем policy
     linucb_policy_object = linucb_policy(K_arms=K_arms, d=d, alpha=alpha)
 
     # Instantiate trackers
@@ -27,21 +27,22 @@ def ctr_simulator(K_arms, d, alpha, data_path):
             data_reward = float(line_data.split()[1])
 
             # 3rd columns onwards: 100 covariates. Keep in array of dimensions (100,) with float data type
+            # Учитывая контекст т.е. covariates, находим ручку с
             covariate_string_list = line_data.split()[2:]
             data_x_array = np.array([float(covariate_elem) for covariate_elem in covariate_string_list])
 
-            # Find policy's chosen arm based on input covariates at current time step
+            # Находим policy's chosen arm
             arm_index = linucb_policy_object.select_arm(data_x_array)
 
-            # Check if arm_index is the same as data_arm (ie same actions were chosen)
-            # Note that data_arms index range from 1 to 10 while policy arms index range from 0 to 9.
+            # Проверяем если arm_index совпадает data_arm (т.е. такое же действие было выбрано)
+            # Отметим, что data_arms index варьируется от 1 до 10 в то время как policy_arms варьируется от 0 до 9.
             if arm_index + 1 == data_arm:
-                # Use reward information for the chosen arm to update
+                # Используем reward information для того, чтобы обновить выбранную ручку
                 linucb_policy_object.linucb_arms[arm_index].reward_update(data_reward, data_x_array)
 
-                # For CTR calculation
+                # Вычисляем CTR
                 aligned_time_steps += 1
                 cumulative_rewards += data_reward
                 aligned_ctr.append(cumulative_rewards / aligned_time_steps)
 
-    return (aligned_time_steps, cumulative_rewards, aligned_ctr, linucb_policy_object)
+    return aligned_time_steps, cumulative_rewards, aligned_ctr, linucb_policy_object
